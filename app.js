@@ -10,9 +10,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-//things I wrote
+//GET
 app.get('/', (req, res) => {
   res.render('index', { title: 'HomePage' })
+});
+
+app.get('/login', (req, res) => {
+  res.render('login', { title: 'Login' })
+});
+
+app.get('/home', (req, res) => {
+  res.render('home', { title: 'Login' })
 });
 
 //assign port
