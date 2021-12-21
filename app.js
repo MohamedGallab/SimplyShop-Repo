@@ -16,27 +16,35 @@ app.listen(3000);
 
 //functions
 async function login(username, password, req, res) {
+
   //start connection
   let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
   let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
   await client.connect();
 
-  //Query Users Collection
+  //Check userneame and password not null
   if (username && password) {
-    let results = await client.db('SimplyShopDB').collection('UsersColl').find({ username: username, password: password });
-    if (results.count() > 0) {
-      res.redirect('/home');
-    }
-    else {
-      //window.alert('Incorrect Username and/or Password!');
-    }
-  }
-  else {
-    //window.alert('Please enter Username and Password!');
-  }
 
-  //close connection
-  client.close();
+    //Query Users Collection to find the first match
+    client.db('SimplyShopDB').collection('UsersColl').findOne({ username: username, password: password }, function (err, result) {
+      // found a result so redirect which also ends the response
+      if (result) {
+        res.redirect('/home');
+      }
+      // or user didn't enter correct password so send an HTML
+      else {
+        res.send('<h1>Wrong Password or Username</h1> <br> <h2>Refresh Page and Try Again</h2>');
+      }
+      // close connection either way
+      client.close();
+    }
+    );
+  }
+  // if user didn't enter anything
+  else {
+    res.end();
+    client.close();
+  }
 }
 
 async function register(username, password) {
@@ -47,8 +55,13 @@ async function register(username, password) {
 
   //create and add user
   let user = { username: username, password: password };
-  console.log(user);
-  await client.db('SimplyShopDB').collection('UsersColl').insertOne(user);
+
+  // insert unique users
+  await client.db('SimplyShopDB').collection('UsersColl').updateOne(
+    user,
+    { $set: user },
+    { upsert: true }
+  );
 
   //close connection
   client.close();
@@ -56,7 +69,7 @@ async function register(username, password) {
 
 //GET
 app.get('/', (req, res) => {
-  res.render('index', { title: 'HomePage' });
+  res.redirect('/login');
   res.end();
 });
 
@@ -136,12 +149,9 @@ app.post('/login', (req, res) => {
   let username = req.body.username;
   let password = req.body.password;
   login(username, password, req, res);
-  window.alert('Incorrect Username and/or Password!');
-  res.end();
 });
 
 app.post('/register', (req, res) => {
   register(req.body.username, req.body.password);
   res.redirect('/home');
-  res.end();
 });
