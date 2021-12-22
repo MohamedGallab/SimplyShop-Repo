@@ -13,6 +13,26 @@
             text-align: center;
             -webkit-text-stroke: 1px blue;
         }
+        h3
+        {
+            color: white;
+            margin-bottom: 1rem!important;
+        }
+        #searchResultsDiv
+        {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .searchItems
+        {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
     </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,5 +58,47 @@
             </form>
         </div>
     </nav>
+    <div id = 'searchResultsDiv'>
+        <% items.forEach((post) => { %> 
+            <div class = 'searchItems'>
+               <h3><%= post.item_name %></h3>
+               <% switch (post.item_name) {
+                case 'Galaxy S21 Ultra': %>
+                <button onclick="location.href = '/galaxy';" id="sports" class="btn btn-secondary"> View </button>
+              <% break;
+
+
+                case 'iPhone 13 Pro': %>
+                <button onclick="location.href = '/iphone';" id="sports" class="btn btn-secondary"> View </button>
+              <% break;
+
+
+                case 'Leaves of Grass': %>
+                <button onclick="location.href = '/leaves';" id="galaxy" class="btn btn-secondary"> View </button>
+              <% break;
+
+
+              case 'Boxing Bag': %>
+              <button onclick="location.href = '/boxing';" id="galaxy" class="btn btn-secondary"> View </button>
+              <% break;
+
+
+              case 'Tennis Racket': %>
+              <button onclick="location.href = '/tennis';" id="galaxy" class="btn btn-secondary"> View </button>
+              <% break;
+
+              case 'The Sun and Her Flowers': %>
+              <%console.log('sddsdss')%>
+              <button onclick="location.href = '/sun';" id="galaxy" class="btn btn-secondary"> View </button>
+              <% break;%>
+              <% default: %>
+              <%console.log('sddsdss')%>
+                <h1>item not found</h1>
+              <% } %>
+               
+            </div>
+        <%}); %>
+
+    </div>
 </body>
 </html>
