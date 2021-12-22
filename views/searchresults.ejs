@@ -13,26 +13,16 @@
             text-align: center;
             -webkit-text-stroke: 1px blue;
         }
-        h3
-        {
-            color: white;
-            margin-bottom: 1rem!important;
-        }
+
+        /* Our Styling */
         #searchResultsDiv
         {
+            color: white;
             margin-top: 2rem;
             display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-        }
-        .searchItems
-        {
-            display: flex;
-            flex-direction: column;
             justify-content: center;
-            align-items: center;
         }
-
+        
     </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -58,47 +48,40 @@
             </form>
         </div>
     </nav>
+
+    <!-- div that shows the results -->
     <div id = 'searchResultsDiv'>
-        <% items.forEach((post) => { %> 
-            <div class = 'searchItems'>
-               <h3><%= post.item_name %></h3>
-               <% switch (post.item_name) {
-                case 'Galaxy S21 Ultra': %>
-                <button onclick="location.href = '/galaxy';" id="sports" class="btn btn-secondary"> View </button>
-              <% break;
 
+        <!-- show item name -->
+        <h3><%= item.item_name %></h3>
 
-                case 'iPhone 13 Pro': %>
-                <button onclick="location.href = '/iphone';" id="sports" class="btn btn-secondary"> View </button>
-              <% break;
+        <!-- case for which item the search query returns and generate its appropriate button -->
+        <% switch (item.item_name) 
+        {
+            case 'Galaxy S21 Ultra': %>
+            <button onclick="location.href = '/galaxy';" class="btn btn-secondary ml-3"> View </button>
+            <% break;
 
+            case 'iPhone 13 Pro': %>
+            <button onclick="location.href = '/iphone';" class="btn btn-secondary ml-3"> View </button>
+            <% break;
 
-                case 'Leaves of Grass': %>
-                <button onclick="location.href = '/leaves';" id="galaxy" class="btn btn-secondary"> View </button>
-              <% break;
+            case 'Leaves of Grass': %>
+            <button onclick="location.href = '/leaves';" class="btn btn-secondary ml-3"> View </button>
+            <% break;
 
+            case 'Boxing Bag': %>
+            <button onclick="location.href = '/boxing';" class="btn btn-secondary ml-3"> View </button>
+            <% break;
 
-              case 'Boxing Bag': %>
-              <button onclick="location.href = '/boxing';" id="galaxy" class="btn btn-secondary"> View </button>
-              <% break;
+            case 'Tennis Racket': %>
+            <button onclick="location.href = '/tennis';" class="btn btn-secondary ml-3"> View </button>
+            <% break;
 
-
-              case 'Tennis Racket': %>
-              <button onclick="location.href = '/tennis';" id="galaxy" class="btn btn-secondary"> View </button>
-              <% break;
-
-              case 'The Sun and Her Flowers': %>
-              
-              <button onclick="location.href = '/sun';" id="galaxy" class="btn btn-secondary"> View </button>
-              <% break;
-              default: %>
-            
-              <button onclick="location.href = '/sun';" id="galaxy" class="btn btn-secondary"> NOT FOUND </button>
-              <% } %>
-               
-            </div>
-        <%}); %>
-
+            case 'The Sun and Her Flowers': %>
+            <button onclick="location.href = '/sun';" class="btn btn-secondary ml-3"> View </button>
+            <% break;
+        }%>
     </div>
 </body>
 </html>

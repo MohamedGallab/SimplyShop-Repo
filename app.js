@@ -73,31 +73,25 @@ async function search(itemName, req, res) {
   let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
   let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
   await client.connect();
-  //Check userneame and password not null
+
+  //Check search item is not null
   if (itemName) {
-    
-    //Query Users Collection to find the first match
-    client.db('SimplyShopDB').collection('ItemsColl').find({$text: { $search: itemName } } ).toArray(function(err, items) {
-      console.log(items); 
-      if(items.length != 0)
-      { 
-        res.render('searchresults', {
-          items: items, // pass data from the server to the view
-        });
-      } 
-      else
-      {  
-        res.render('searchresults', {
-          items: items, // pass data from the server to the view
-        });
-      }
+
+    //Query Items Collection to find the all matches
+    client.db('SimplyShopDB').collection('ItemsColl').findOne({ $text: { $search: itemName } }, function (err, item) {
+
+      res.render('searchresults', {
+        item: item, // pass data from the server to the view
+      });
       client.close();
+      res.end();
     });
   }
+  
   // if user didn't enter anything
   else {
-    
     client.close();
+    res.end();
   }
 }
 
@@ -194,5 +188,4 @@ app.post('/register', (req, res) => {
 app.post('/search', (req, res) => {
   let itemName = req.body.Search;
   search(itemName, req, res);
- 
 });
