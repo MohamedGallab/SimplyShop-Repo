@@ -67,6 +67,41 @@ async function register(username, password) {
   client.close();
 }
 
+async function search(itemName, req, res) {
+
+  //start connection
+  let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
+  let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+  await client.connect();
+  //Check userneame and password not null
+  if (itemName) {
+    
+    //Query Users Collection to find the first match
+    client.db('SimplyShopDB').collection('ItemsColl').find({$text: { $search: itemName } } ).toArray(function(err, items) {
+      console.log(items); 
+      if(items.length != 0)
+      { 
+        res.render('searchresults', {
+          items: items, // pass data from the server to the view
+        });
+      } 
+      else
+      {  
+        res.render('searchresults', {
+          items: items, // pass data from the server to the view
+        });
+      }
+      client.close();
+    });
+  }
+  // if user didn't enter anything
+  else {
+    
+    client.close();
+  }
+}
+
+
 //GET
 app.get('/', (req, res) => {
   res.redirect('/login');
@@ -154,4 +189,10 @@ app.post('/login', (req, res) => {
 app.post('/register', (req, res) => {
   register(req.body.username, req.body.password);
   res.redirect('/home');
+});
+
+app.post('/search', (req, res) => {
+  let itemName = req.body.Search;
+  search(itemName, req, res);
+ 
 });
