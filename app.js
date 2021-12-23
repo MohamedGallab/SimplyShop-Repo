@@ -87,9 +87,11 @@ async function search(searchTerm, req, res) {
 
   //Check search term is not null
   if (searchTerm) {
-
+    let test = ".*" + searchTerm + ".*";
+    console.log(test);
     //Query Items Collection to find the all matches
-    client.db('SimplyShopDB').collection('ItemsColl').find({ $text: { $search: searchTerm } }).toArray(function (err, items) {
+    client.db('SimplyShopDB').collection('ItemsColl').find({ 'item_name': {'$regex' : '.*'+ searchTerm +'.*', '$options' : 'i'}}).toArray(function (err, items) {
+      console.log(items);
       res.render('searchresults', {
         items: items, // pass data from the server to the view
       });
