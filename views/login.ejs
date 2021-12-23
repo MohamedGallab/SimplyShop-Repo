@@ -33,6 +33,10 @@
     </div>
     <div class="cont">
         <form method="POST">
+            <!-- Handle wrong Login -->
+            <h5 style="color: red;"><%= errorMessage %></h5>
+            <br>
+
             Username:<br>
             <input type="text" name="username">
             <br>

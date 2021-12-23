@@ -50,38 +50,45 @@
     </nav>
 
     <!-- div that shows the results -->
+    <% if (items.length == 0) { %>
+        <h1 style="color: red; -webkit-text-stroke: 1px black;">No Matching Results, Try Another Search Term</h1>
+    <% } 
+    else { %>
     <div id = 'searchResultsDiv'>
 
-        <!-- show item name -->
-        <h3><%= item.item_name %></h3>
+        <% items.forEach((item) => { %>
+            <!-- show item name -->
+            <h3><%= item.item_name %></h3>
+            
+            <!-- case for which item the search query returns and generate its appropriate button -->
+            <% switch (item.item_name) 
+            {
+                case 'Galaxy S21 Ultra': %>
+                <button onclick="location.href = '/galaxy';" class="btn btn-secondary ml-3"> View </button>
+                <% break;
 
-        <!-- case for which item the search query returns and generate its appropriate button -->
-        <% switch (item.item_name) 
-        {
-            case 'Galaxy S21 Ultra': %>
-            <button onclick="location.href = '/galaxy';" class="btn btn-secondary ml-3"> View </button>
-            <% break;
+                case 'iPhone 13 Pro': %>
+                <button onclick="location.href = '/iphone';" class="btn btn-secondary ml-3"> View </button>
+                <% break;
 
-            case 'iPhone 13 Pro': %>
-            <button onclick="location.href = '/iphone';" class="btn btn-secondary ml-3"> View </button>
-            <% break;
+                case 'Leaves of Grass': %>
+                <button onclick="location.href = '/leaves';" class="btn btn-secondary ml-3"> View </button>
+                <% break;
 
-            case 'Leaves of Grass': %>
-            <button onclick="location.href = '/leaves';" class="btn btn-secondary ml-3"> View </button>
-            <% break;
+                case 'Boxing Bag': %>
+                <button onclick="location.href = '/boxing';" class="btn btn-secondary ml-3"> View </button>
+                <% break;
 
-            case 'Boxing Bag': %>
-            <button onclick="location.href = '/boxing';" class="btn btn-secondary ml-3"> View </button>
-            <% break;
+                case 'Tennis Racket': %>
+                <button onclick="location.href = '/tennis';" class="btn btn-secondary ml-3"> View </button>
+                <% break;
 
-            case 'Tennis Racket': %>
-            <button onclick="location.href = '/tennis';" class="btn btn-secondary ml-3"> View </button>
-            <% break;
-
-            case 'The Sun and Her Flowers': %>
-            <button onclick="location.href = '/sun';" class="btn btn-secondary ml-3"> View </button>
-            <% break;
-        }%>
+                case 'The Sun and Her Flowers': %>
+                <button onclick="location.href = '/sun';" class="btn btn-secondary ml-3"> View </button>
+                <% break;
+            }
+        })%>
     </div>
+    <% } %>
 </body>
 </html>

@@ -35,6 +35,10 @@
     </div>
     <div class="cont">
         <form method='post' action='/register'>
+            <!-- Handle wrong Registeration -->
+            <h5 style="color: red;"><%= errorMessage %></h5>
+            <br>
+
             Username: <br>
             <input type="text" id="user" name="username"> <br>
             Password: <br>

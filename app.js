@@ -2,6 +2,10 @@ let express = require('express');
 let path = require('path');
 let app = express();
 let { MongoClient } = require("mongodb");
+const res = require('express/lib/response');
+
+let username;
+let password;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -33,7 +37,7 @@ async function login(username, password, req, res) {
       }
       // or user didn't enter correct password so send an HTML
       else {
-        res.send('<h1>Wrong Password or Username</h1> <br> <h2>Refresh Page and Try Again</h2>');
+        res.render('login', { errorMessage: 'Wrong Password or Username, Please Try Again' });
       }
       // close connection either way
       client.close();
@@ -47,47 +51,52 @@ async function login(username, password, req, res) {
   }
 }
 
-async function register(username, password) {
+async function register(username, password, req, res) {
   //start connection
   let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
   let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
   await client.connect();
 
-  //create and add user
+  // create and add user
   let user = { username: username, password: password };
 
-  // insert unique users
-  await client.db('SimplyShopDB').collection('UsersColl').updateOne(
-    user,
-    { $set: user },
-    { upsert: true }
-  );
+  // search for user name
+  client.db('SimplyShopDB').collection('UsersColl').findOne({ username: username }, async function (err, result) {
 
-  //close connection
-  client.close();
+    // find if user already exists
+    if (result) {
+      res.render('registration', { errorMessage: 'UserName Already Exists' });
+    }
+    // register new user
+    else {
+      await client.db('SimplyShopDB').collection('UsersColl').insertOne(user);
+      res.redirect('/home');
+    }
+    // close connection either way
+    client.close();
+  }
+  );
 }
 
-async function search(itemName, req, res) {
+async function search(searchTerm, req, res) {
 
   //start connection
   let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
   let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
   await client.connect();
 
-  //Check search item is not null
-  if (itemName) {
+  //Check search term is not null
+  if (searchTerm) {
 
     //Query Items Collection to find the all matches
-    client.db('SimplyShopDB').collection('ItemsColl').findOne({ $text: { $search: itemName } }, function (err, item) {
-
+    client.db('SimplyShopDB').collection('ItemsColl').find({ $text: { $search: searchTerm } }).toArray(function (err, items) {
       res.render('searchresults', {
-        item: item, // pass data from the server to the view
+        items: items, // pass data from the server to the view
       });
       client.close();
-      res.end();
     });
   }
-  
+
   // if user didn't enter anything
   else {
     client.close();
@@ -103,89 +112,88 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  res.render('login', { title: 'Login' });
+  res.render('login', { errorMessage: '' });
+  res.end();
+});
+
+app.get('/registration', (req, res) => {
+  res.render('registration', { errorMessage: '' });
   res.end();
 });
 
 app.get('/home', (req, res) => {
-  res.render('home', { title: 'home' });
+  res.render('home');
   res.end();
 });
 
 app.get('/books', (req, res) => {
-  res.render('books', { title: 'books' });
+  res.render('books');
   res.end();
 });
 
 app.get('/boxing', (req, res) => {
-  res.render('boxing', { title: 'boxing' });
+  res.render('boxing');
   res.end();
 });
 
 app.get('/cart', (req, res) => {
-  res.render('cart', { title: 'cart' });
+  res.render('cart');
   res.end();
 });
 
 app.get('/galaxy', (req, res) => {
-  res.render('galaxy', { title: 'galaxy' });
+  res.render('galaxy');
   res.end();
 });
 
 
 app.get('/iphone', (req, res) => {
-  res.render('iphone', { title: 'iphone' });
+  res.render('iphone');
   res.end();
 });
 
 app.get('/leaves', (req, res) => {
-  res.render('leaves', { title: 'leaves' });
+  res.render('leaves');
   res.end();
 });
 
 app.get('/phones', (req, res) => {
-  res.render('phones', { title: 'phones' });
-  res.end();
-});
-
-app.get('/registration', (req, res) => {
-  res.render('registration', { title: 'registration' });
+  res.render('phones');
   res.end();
 });
 
 app.get('/searchresults', (req, res) => {
-  res.render('searchresults', { title: 'searchresults' });
+  res.render('searchresults');
   res.end();
 });
 
 app.get('/sports', (req, res) => {
-  res.render('sports', { title: 'sports' });
+  res.render('sports');
   res.end();
 });
 
 app.get('/sun', (req, res) => {
-  res.render('sun', { title: 'sun' });
+  res.render('sun');
   res.end();
 });
 
 app.get('/tennis', (req, res) => {
-  res.render('tennis', { title: 'tennis' });
+  res.render('tennis');
   res.end();
 });
 
 //POST
 app.post('/login', (req, res) => {
-  let username = req.body.username;
-  let password = req.body.password;
+  username = req.body.username;
+  password = req.body.password;
   login(username, password, req, res);
 });
 
 app.post('/register', (req, res) => {
-  register(req.body.username, req.body.password);
-  res.redirect('/home');
+  register(req.body.username, req.body.password, req, res);
 });
 
 app.post('/search', (req, res) => {
-  let itemName = req.body.Search;
-  search(itemName, req, res);
+  let searchTerm = req.body.Search;
+  search(searchTerm, req, res);
 });
