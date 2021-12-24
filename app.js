@@ -90,7 +90,7 @@ async function search(searchTerm, req, res) {
     let test = ".*" + searchTerm + ".*";
     console.log(test);
     //Query Items Collection to find the all matches
-    client.db('SimplyShopDB').collection('ItemsColl').find({ 'item_name': {'$regex' : '.*'+ searchTerm +'.*', '$options' : 'i'}}).toArray(function (err, items) {
+    client.db('SimplyShopDB').collection('ItemsColl').find({ 'item_name': { '$regex': '.*' + searchTerm + '.*', '$options': 'i' } }).toArray(function (err, items) {
       console.log(items);
       res.render('searchresults', {
         items: items, // pass data from the server to the view
@@ -104,6 +104,16 @@ async function search(searchTerm, req, res) {
     client.close();
     res.end();
   }
+}
+
+async function addToCart(username,itemName,route) {
+
+  //start connection
+  let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
+  let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+  await client.connect();
+  res.render(route, { itemAddedMessage: 'item added to cart!' });
+  
 }
 
 
@@ -199,3 +209,10 @@ app.post('/search', (req, res) => {
   let searchTerm = req.body.Search;
   search(searchTerm, req, res);
 });
+
+app.post('/addToCart', (req, res) => {
+  let name= req.body.pageName
+  console.log(req);
+});
+
+
