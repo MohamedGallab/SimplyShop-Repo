@@ -106,7 +106,7 @@ async function search(searchTerm, req, res) {
   }
 }
 
-async function addToCart(username,itemName,route,res) {
+async function addToCart(username,itemName,route) {
 
   //start connection
   let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
@@ -122,23 +122,23 @@ async function addToCart(username,itemName,route,res) {
   client.db('SimplyShopDB').collection('UsersColl').findOne({ Username: username }, async function (err, result) {
 
     console.log(result);
-    // currCart = result.Cart;
-    // if(!result.Cart.isEmpty){
-    //   currCart.forEach(item => {
-    //     if(item.name=itemName){
-    //       item.quantity=item.quantity+1;
-    //       itemFound=true;
-    //     }
-    //   });
-    // }
+    currCart = result.Cart;
+    if(!result.Cart.isEmpty){
+      currCart.forEach(item => {
+        if(item.name==itemName){
+          item.quantity=item.quantity+1;
+          itemFound=true;
+        }
+      });
+    }
 
-    // if(!itemFound){
-    //   currCart.push({name : itemName , quantity : 1});
-    // }
-    // await client.db('SimplyShopDB').collection('UsersColl').updateOne(
-    //   {Username : username},
-    //   { $set: {Cart : currCart}}
-    // )
+    if(!itemFound){
+      currCart.push({name : itemName , quantity : 1});
+    }
+    await client.db('SimplyShopDB').collection('UsersColl').updateOne(
+      {Username : username},
+      { $set: {Cart : currCart}}
+    )
     
     
     // close connection either way
