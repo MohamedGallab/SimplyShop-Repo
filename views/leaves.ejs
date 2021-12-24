@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <style>
         body {
@@ -13,12 +14,14 @@
             text-align: center;
             -webkit-text-stroke: 1px blue;
         }
+
         .container1 {
             position: fixed;
             left: 50px;
             top: 150px;
             color: white;
         }
+
         .container2 {
             position: fixed;
             left: 300px;
@@ -28,6 +31,7 @@
             text-align: justify;
             text-justify: inter-word;
         }
+
         .video {
             position: fixed;
             left: 700px;
@@ -37,11 +41,13 @@
             text-align: justify;
             text-justify: inter-word;
         }
+
         .cart {
             position: fixed;
             left: 30px;
             top: 470px;
         }
+
         #my {
             zoom: 110%;
         }
@@ -75,10 +81,15 @@
         <img id="image" src="/leaves.jpg" width="193" height="300">
     </div>
     <div class="container2">
-        A poetry collection by American poet Walt Whitman (1819–1892), each poem of which is loosely connected and represents the celebration of his philosophy of life and humanity.
+        A poetry collection by American poet Walt Whitman (1819–1892), each poem of which is loosely connected and
+        represents the celebration of his philosophy of life and humanity.
     </div>
     <div class="cart">
-        <button id="cart" class="btn btn-secondary ml-3">Add to Cart</button>
+        <form method="post" action="/addToCart" class="form-inline my-2 my-lg-0">
+            <input type="hidden" name="pageName" value="Leaves of Grass" >
+            <button id="cart" type="submit" class="btn btn-secondary ml-3">Add to Cart</button>
+            <h5 style="color: rgb(24, 243, 123);">item added to cart succesfully!</h5>
+        </form>
     </div>
     <div class="video">
         <iframe width="560" height="315" src="https://www.youtube.com/embed/01AL3EClMgI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
