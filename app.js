@@ -88,10 +88,8 @@ async function search(searchTerm, req, res) {
   //Check search term is not null
   if (searchTerm) {
     let test = ".*" + searchTerm + ".*";
-    console.log(test);
     //Query Items Collection to find the all matches
-    client.db('SimplyShopDB').collection('ItemsColl').find({ 'item_name': { '$regex': '.*' + searchTerm + '.*', '$options': 'i' } }).toArray(function (err, items) {
-      console.log(items);
+    client.db('SimplyShopDB').collection('ItemsColl').find({ 'Name': { '$regex': '.*' + searchTerm + '.*', '$options': 'i' } }).toArray(function (err, items) {
       res.render('searchresults', {
         items: items, // pass data from the server to the view
       });
@@ -123,8 +121,8 @@ async function addToCart(username, itemName, route, req, res) {
     // if cart is not empty look for the item if it exists and increment its quantity
     if (!result.Cart.isEmpty) {
       currCart.forEach(item => {
-        if (item.name == itemName) {
-          item.quantity = item.quantity + 1;
+        if (item.Name == itemName) {
+          item.Quantity = item.Quantity + 1;
           itemFound = true;
         }
       });
@@ -132,7 +130,7 @@ async function addToCart(username, itemName, route, req, res) {
 
     // if item doesn't exist then add it
     if (!itemFound) {
-      currCart.push({ name: itemName, quantity: 1 });
+      currCart.push({ Name: itemName, Quantity: 1 });
     }
     await client.db('SimplyShopDB').collection('UsersColl').updateOne(
       { Username: username },

@@ -65,10 +65,10 @@
         <% items.forEach((item) => { %>
             <div class="searchResultItem">
             <!-- show item name -->
-            <h3><%= item.item_name %></h3>
+            <h3><%= item.Name %></h3>
             
             <!-- case for which item the search query returns and generate its appropriate button -->
-            <% switch (item.item_name) 
+            <% switch (item.Name) 
             {
                 case 'Galaxy S21 Ultra': %>
                 <button onclick="location.href = '/galaxy';" class="btn btn-secondary ml-3"> View </button>
