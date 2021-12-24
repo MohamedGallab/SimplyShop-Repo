@@ -88,10 +88,12 @@
     <div class="cart">
         <form method="post" action="/addToCart" class="form-inline my-2 my-lg-0">
             <input type="hidden" name="route" value="sun" >
-            <input type="hidden" name="pageName" value="The Sun and Her Flowers" >
+            <input type="hidden" name="itemName" value="The Sun and Her Flowers" >
             <button id="cart" type="submit" class="btn btn-secondary ml-3">Add to Cart</button>
-            <h5 style="color: rgb(24, 243, 123);">item added to cart succesfully!</h5>
         </form>
+        <br>
+        <!-- Display Cart add Message -->
+        <h4 style="color: rgb(24, 243, 123);"><%= addToCartMessage %></h4>
     </div>
     <div class="video">
         <iframe width="560" height="315" src="https://www.youtube.com/embed/koOJkgzE3zE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -20,7 +20,13 @@
             color: white;
             margin-top: 2rem;
             display: flex;
-            justify-content: center;
+            justify-content: space-evenly;
+        }
+
+        .searchResultItem
+        {
+            display: flex;
+            justify-content: space-evenly;
         }
         
     </style>
@@ -57,6 +63,7 @@
     <div id = 'searchResultsDiv'>
 
         <% items.forEach((item) => { %>
+            <div class="searchResultItem">
             <!-- show item name -->
             <h3><%= item.item_name %></h3>
             
@@ -86,8 +93,9 @@
                 case 'The Sun and Her Flowers': %>
                 <button onclick="location.href = '/sun';" class="btn btn-secondary ml-3"> View </button>
                 <% break;
-            }
-        })%>
+            }%>
+            </div>
+        <%})%>
     </div>
     <% } %>
 </body>

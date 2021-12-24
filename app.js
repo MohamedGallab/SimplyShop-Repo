@@ -106,125 +106,107 @@ async function search(searchTerm, req, res) {
   }
 }
 
-async function addToCart(username,itemName,route) {
+async function addToCart(username, itemName, route, req, res) {
 
   //start connection
   let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
   let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
   await client.connect();
-  
-  
+
   let currCart;
   let itemFound = false;
 
-  
-
+  // find user cart
   client.db('SimplyShopDB').collection('UsersColl').findOne({ Username: username }, async function (err, result) {
 
-    console.log(result);
     currCart = result.Cart;
-    if(!result.Cart.isEmpty){
+    // if cart is not empty look for the item if it exists and increment its quantity
+    if (!result.Cart.isEmpty) {
       currCart.forEach(item => {
-        if(item.name==itemName){
-          item.quantity=item.quantity+1;
-          itemFound=true;
+        if (item.name == itemName) {
+          item.quantity = item.quantity + 1;
+          itemFound = true;
         }
       });
     }
 
-    if(!itemFound){
-      currCart.push({name : itemName , quantity : 1});
+    // if item doesn't exist then add it
+    if (!itemFound) {
+      currCart.push({ name: itemName, quantity: 1 });
     }
     await client.db('SimplyShopDB').collection('UsersColl').updateOne(
-      {Username : username},
-      { $set: {Cart : currCart}}
+      { Username: username },
+      { $set: { Cart: currCart } }
     )
-    
-    
-    // close connection either way
+
+    // close connection either way & display success message
     client.close();
+    res.render(route, { addToCartMessage: 'item added to cart succesfully!' });
   }
-  ); 
+  );
 }
-
-
 
 
 //GET
 app.get('/', (req, res) => {
   res.redirect('/login');
-  res.end();
 });
 
 app.get('/login', (req, res) => {
   res.render('login', { errorMessage: '' });
-  res.end();
 });
 
 app.get('/registration', (req, res) => {
   res.render('registration', { errorMessage: '' });
-  res.end();
 });
 
 app.get('/home', (req, res) => {
   res.render('home');
-  res.end();
 });
 
 app.get('/books', (req, res) => {
   res.render('books');
-  res.end();
 });
 
 app.get('/boxing', (req, res) => {
-  res.render('boxing');
-  res.end();
+  res.render('boxing', { addToCartMessage: '' });
 });
 
 app.get('/cart', (req, res) => {
   res.render('cart');
-  res.end();
 });
 
 app.get('/galaxy', (req, res) => {
-  res.render('galaxy');
-  res.end();
+  res.render('galaxy', { addToCartMessage: '' });
 });
 
 
 app.get('/iphone', (req, res) => {
-  res.render('iphone');
-  res.end();
+  res.render('iphone', { addToCartMessage: '' });
 });
 
 app.get('/leaves', (req, res) => {
-  res.render('leaves');
-  res.end();
+  res.render('leaves', { addToCartMessage: '' });
 });
 
 app.get('/phones', (req, res) => {
   res.render('phones');
-  res.end();
 });
 
 app.get('/searchresults', (req, res) => {
   res.render('searchresults');
-  res.end();
 });
 
 app.get('/sports', (req, res) => {
   res.render('sports');
-  res.end();
 });
 
 app.get('/sun', (req, res) => {
-  res.render('sun');
-  res.end();
+  res.render('sun', { addToCartMessage: '' });
 });
 
 app.get('/tennis', (req, res) => {
-  res.render('tennis');
-  res.end();
+  res.render('tennis', { addToCartMessage: '' });
 });
 
 //POST
@@ -244,9 +226,7 @@ app.post('/search', (req, res) => {
 });
 
 app.post('/addToCart', (req, res) => {
-  let name = req.body.pageName;
-  let route = req.body.route; 
-  addToCart(username,name,route)
+  let itemName = req.body.itemName;
+  let route = req.body.route;
+  addToCart(username, itemName, route, req, res);
 });
-
-
