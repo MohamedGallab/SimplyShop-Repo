@@ -30,7 +30,7 @@ async function login(username, password, req, res) {
   if (username && password) {
 
     //Query Users Collection to find the first match
-    client.db('SimplyShopDB').collection('UsersColl').findOne({ username: username, password: password }, function (err, result) {
+    client.db('SimplyShopDB').collection('UsersColl').findOne({ Username: username, Password: password }, function (err, result) {
       // found a result so redirect which also ends the response
       if (result) {
         res.redirect('/home');
