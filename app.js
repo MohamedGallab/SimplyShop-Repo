@@ -58,16 +58,16 @@ async function register(username, password, req, res) {
   await client.connect();
 
   // create and add user
-  let user = { username: username, password: password };
+  let user = { Username: username, Password: password, Cart: [] };
 
   // search for user name
-  client.db('SimplyShopDB').collection('UsersColl').findOne({ username: username }, async function (err, result) {
+  client.db('SimplyShopDB').collection('UsersColl').findOne({ Username: username }, async function (err, result) {
 
     // find if user already exists
     if (result) {
       res.render('registration', { errorMessage: 'UserName Already Exists' });
     }
-    // register new user
+    // register new user & cart
     else {
       await client.db('SimplyShopDB').collection('UsersColl').insertOne(user);
       res.redirect('/home');
