@@ -106,15 +106,48 @@ async function search(searchTerm, req, res) {
   }
 }
 
-async function addToCart(username,itemName,route) {
+async function addToCart(username,itemName,route,res) {
 
   //start connection
   let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
   let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
   await client.connect();
-  res.render(route, { itemAddedMessage: 'item added to cart!' });
   
+  
+  let currCart;
+  let itemFound = false;
+
+  
+
+  client.db('SimplyShopDB').collection('UsersColl').findOne({ Username: username }, async function (err, result) {
+
+    console.log(result);
+    // currCart = result.Cart;
+    // if(!result.Cart.isEmpty){
+    //   currCart.forEach(item => {
+    //     if(item.name=itemName){
+    //       item.quantity=item.quantity+1;
+    //       itemFound=true;
+    //     }
+    //   });
+    // }
+
+    // if(!itemFound){
+    //   currCart.push({name : itemName , quantity : 1});
+    // }
+    // await client.db('SimplyShopDB').collection('UsersColl').updateOne(
+    //   {Username : username},
+    //   { $set: {Cart : currCart}}
+    // )
+    
+    
+    // close connection either way
+    client.close();
+  }
+  ); 
 }
+
+
 
 
 //GET
@@ -211,8 +244,9 @@ app.post('/search', (req, res) => {
 });
 
 app.post('/addToCart', (req, res) => {
-  let name= req.body.pageName
-  console.log(req);
+  let name = req.body.pageName;
+  let route = req.body.route; 
+  addToCart(username,name,route)
 });
 
 
