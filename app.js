@@ -145,6 +145,25 @@ async function addToCart(username, itemName, route, req, res) {
   );
 }
 
+async function viewCart(username, req, res) {
+
+  //start connection
+  let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
+  let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+  await client.connect();
+
+  let currCart;
+  // find user cart
+  client.db('SimplyShopDB').collection('UsersColl').findOne({ Username: username }, async function (err, result) {
+
+    currCart = result.Cart;
+    res.render('cart', { currCart: currCart });
+
+    // close connection either way & display success message
+    client.close();
+  }
+  );
+}
 
 //GET
 app.get('/', (req, res) => {
@@ -172,7 +191,7 @@ app.get('/boxing', (req, res) => {
 });
 
 app.get('/cart', (req, res) => {
-  res.render('cart');
+  viewCart(username,req,res);
 });
 
 app.get('/galaxy', (req, res) => {
