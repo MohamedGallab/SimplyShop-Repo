@@ -52,30 +52,36 @@ async function login(username, password, req, res) {
 }
 
 async function register(username, password, req, res) {
-  //start connection
-  let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
-  let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
-  await client.connect();
 
-  // create and add user
-  let user = { Username: username, Password: password, Cart: [] };
+  if (username && password) {
+    //start connection
+    let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
+    let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+    await client.connect();
 
-  // search for user name
-  client.db('SimplyShopDB').collection('UsersColl').findOne({ Username: username }, async function (err, result) {
+    // create and add user
+    let user = { Username: username, Password: password, Cart: [] };
 
-    // find if user already exists
-    if (result) {
-      res.render('registration', { errorMessage: 'UserName Already Exists' });
+    // search for user name
+    client.db('SimplyShopDB').collection('UsersColl').findOne({ Username: username }, async function (err, result) {
+
+      // find if user already exists
+      if (result) {
+        res.render('registration', { errorMessage: 'UserName Already Exists' });
+      }
+      // register new user & cart
+      else {
+        await client.db('SimplyShopDB').collection('UsersColl').insertOne(user);
+        res.redirect('/home');
+      }
+      // close connection either way
+      client.close();
     }
-    // register new user & cart
-    else {
-      await client.db('SimplyShopDB').collection('UsersColl').insertOne(user);
-      res.redirect('/home');
-    }
-    // close connection either way
-    client.close();
+    );
   }
-  );
+  else {
+    res.render('registration', { errorMessage: 'You have to enter a username and password' });
+  }
 }
 
 async function search(searchTerm, req, res) {
@@ -112,34 +118,29 @@ async function addToCart(username, itemName, route, req, res) {
   await client.connect();
 
   let currCart;
-  let itemFound = false;
 
   // find user cart
   client.db('SimplyShopDB').collection('UsersColl').findOne({ Username: username }, async function (err, result) {
 
     currCart = result.Cart;
-    // if cart is not empty look for the item if it exists and increment its quantity
-    if (!result.Cart.isEmpty) {
-      currCart.forEach(item => {
-        if (item.Name == itemName) {
-          item.Quantity = item.Quantity + 1;
-          itemFound = true;
-        }
-      });
+
+    // if item already in cart displaye error
+    if (currCart.includes(itemName)) {
+      res.render(route, { addToCartMessage: 'item already in cart !' });
     }
 
-    // if item doesn't exist then add it
-    if (!itemFound) {
-      currCart.push({ Name: itemName, Quantity: 1 });
+    // else add it
+    else {
+      currCart.push(itemName);
+      await client.db('SimplyShopDB').collection('UsersColl').updateOne(
+        { Username: username },
+        { $set: { Cart: currCart } }
+      );
+      res.render(route, { addToCartMessage: 'item added to cart succesfully !' });
     }
-    await client.db('SimplyShopDB').collection('UsersColl').updateOne(
-      { Username: username },
-      { $set: { Cart: currCart } }
-    )
 
-    // close connection either way & display success message
+    // close connection either way
     client.close();
-    res.render(route, { addToCartMessage: 'item added to cart succesfully!' });
   }
   );
 }
@@ -215,7 +216,9 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-  register(req.body.username, req.body.password, req, res);
+  username = req.body.username;
+  password = req.body.password;
+  register(username, password, req, res);
 });
 
 app.post('/search', (req, res) => {
