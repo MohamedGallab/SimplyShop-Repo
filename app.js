@@ -191,7 +191,7 @@ app.get('/boxing', (req, res) => {
 });
 
 app.get('/cart', (req, res) => {
-  viewCart(username,req,res);
+  viewCart(username, req, res);
 });
 
 app.get('/galaxy', (req, res) => {
