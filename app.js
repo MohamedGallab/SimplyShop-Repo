@@ -32,7 +32,12 @@ app.use(session({
 
 
 //assign port
-app.listen(3000);
+if(process.env.PORT){
+  app.listen(process.env.PORT, function() {console.log('server started');});
+}
+else{
+  app.listen(3000, function() {console.log('server started on port 3000');});
+}
 
 //functions
 async function login(username, password, req, res) {
