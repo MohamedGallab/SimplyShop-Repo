@@ -205,7 +205,7 @@ app.post('/register', (req, res) => {
 
 // catch trying to go to a page directly
 app.use(function(req, res, next) {
-  if(!req.session.username || !req.session) {       // requiring a valid access token
+  if(!req.session.username) {       // requiring a valid access token
       res.redirect('/login');
   } else {
       next();
