@@ -13,13 +13,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+//start connection
+let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
+let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+
 // create session for every user
 app.use(session({
   secret:'some secret',
   resave: false,
   saveUninitialized: true,
   store: new MongoStore({
-    mongoUrl: 'mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority',
+    mongoUrl: url,
     autoRemove: 'native',
     ttl: 5 * 60  // live for 5 mins
   })
@@ -33,9 +37,6 @@ app.listen(3000);
 //functions
 async function login(username, password, req, res) {
 
-  //start connection
-  let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
-  let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
   await client.connect();
 
   //Check userneame and password not null
@@ -67,8 +68,6 @@ async function register(username, password, req, res) {
 
   if (username && password) {
     //start connection
-    let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
-    let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
     await client.connect();
 
     // create and add user
@@ -99,8 +98,6 @@ async function register(username, password, req, res) {
 async function search(searchTerm, req, res) {
 
   //start connection
-  let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
-  let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
   await client.connect();
 
   //Check search term is not null
@@ -125,8 +122,6 @@ async function search(searchTerm, req, res) {
 async function addToCart(username, itemName, route, req, res) {
 
   //start connection
-  let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
-  let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
   await client.connect();
 
   let currCart;
@@ -160,8 +155,6 @@ async function addToCart(username, itemName, route, req, res) {
 async function viewCart(username, req, res) {
 
   //start connection
-  let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
-  let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
   await client.connect();
 
   let currCart;
