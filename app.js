@@ -5,17 +5,6 @@ let MongoStore = require('connect-mongo');
 let app = express();
 let {MongoClient} = require("mongodb");
 
-app.use(session({
-  secret:'testu',
-  resave: false,
-  saveUninitialized: true,
-  store: new MongoStore({
-    mongoUrl: 'mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority',
-      ttl: 14 * 24 * 60 * 60,
-      autoRemove: 'native'
-  })
-}));
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -23,6 +12,20 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// create session for every user
+app.use(session({
+  secret:'some secret',
+  resave: false,
+  saveUninitialized: true,
+  store: new MongoStore({
+    mongoUrl: 'mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority',
+    autoRemove: 'native',
+    ttl: 5 * 60  // live for 5 mins
+  })
+}));
+
+
 
 //assign port
 app.listen(3000);
@@ -93,10 +96,6 @@ async function register(username, password, req, res) {
   }
 }
 
-async function createSession(req, res)
-{
-}
-
 async function search(searchTerm, req, res) {
 
   //start connection
@@ -123,7 +122,7 @@ async function search(searchTerm, req, res) {
   }
 }
 
-async function addToCart(itemName, route, req, res) {
+async function addToCart(username, itemName, route, req, res) {
 
   //start connection
   let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
@@ -178,7 +177,7 @@ async function viewCart(username, req, res) {
   );
 }
 
-//GET
+// trying to login or register
 app.get('/', (req, res) => {
   res.redirect('/login');
 });
@@ -191,6 +190,31 @@ app.get('/registration', (req, res) => {
   res.render('registration', { errorMessage: '' });
 });
 
+app.post('/login', (req, res) => {
+  let username = req.body.username;
+  let password = req.body.password;
+  req.session.username = username;
+  login(username, password, req, res);
+});
+
+app.post('/register', (req, res) => {
+  let username = req.body.username;
+  let password = req.body.password;
+  req.session.username = username;
+  register(username, password, req, res);
+});
+
+
+// catch trying to go to a page directly
+app.use(function(req, res, next) {
+  if(!req.session.username) {       // requiring a valid access token
+      res.redirect('/login');
+  } else {
+      next();
+  }
+});
+
+// all other views
 app.get('/home', (req, res) => {
   res.render('home');
 });
@@ -204,7 +228,7 @@ app.get('/boxing', (req, res) => {
 });
 
 app.get('/cart', (req, res) => {
-  viewCart(username, req, res);
+  viewCart(req.session.username, req, res);
 });
 
 app.get('/galaxy', (req, res) => {
@@ -241,18 +265,6 @@ app.get('/tennis', (req, res) => {
 });
 
 //POST
-app.post('/login', (req, res) => {
-  let username = req.body.username;
-  let password = req.body.password;
-  req.session.username = username;
-  login(username, password, req, res);
-});
-
-app.post('/register', (req, res) => {
-  let username = req.body.username;
-  let password = req.body.password;
-  register(username, password, req, res);
-});
 
 app.post('/search', (req, res) => {
   let searchTerm = req.body.Search;
@@ -262,5 +274,6 @@ app.post('/search', (req, res) => {
 app.post('/addToCart', (req, res) => {
   let itemName = req.body.itemName;
   let route = req.body.route;
+  let username = req.session.username;
   addToCart(username, itemName, route, req, res);
 });
