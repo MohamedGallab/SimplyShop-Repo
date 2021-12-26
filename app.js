@@ -1,11 +1,20 @@
 let express = require('express');
 let path = require('path');
+let session = require('express-session');
+let MongoStore = require('connect-mongo');
 let app = express();
-let { MongoClient } = require("mongodb");
-const res = require('express/lib/response');
+let {MongoClient} = require("mongodb");
 
-let username;
-let password;
+app.use(session({
+  secret:'testu',
+  resave: false,
+  saveUninitialized: true,
+  store: new MongoStore({
+    mongoUrl: 'mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority',
+      ttl: 14 * 24 * 60 * 60,
+      autoRemove: 'native'
+  })
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -84,6 +93,10 @@ async function register(username, password, req, res) {
   }
 }
 
+async function createSession(req, res)
+{
+}
+
 async function search(searchTerm, req, res) {
 
   //start connection
@@ -110,7 +123,7 @@ async function search(searchTerm, req, res) {
   }
 }
 
-async function addToCart(username, itemName, route, req, res) {
+async function addToCart(itemName, route, req, res) {
 
   //start connection
   let url = "mongodb+srv://admin:admin@simplyshop.pzba7.mongodb.net/SimplyShopDB?retryWrites=true&w=majority";
@@ -210,14 +223,15 @@ app.get('/tennis', (req, res) => {
 
 //POST
 app.post('/login', (req, res) => {
-  username = req.body.username;
-  password = req.body.password;
+  let username = req.body.username;
+  let password = req.body.password;
+  req.session.username = username;
   login(username, password, req, res);
 });
 
 app.post('/register', (req, res) => {
-  username = req.body.username;
-  password = req.body.password;
+  let username = req.body.username;
+  let password = req.body.password;
   register(username, password, req, res);
 });
 
