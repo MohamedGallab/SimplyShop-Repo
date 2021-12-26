@@ -25,7 +25,7 @@ app.use(session({
   store: new MongoStore({
     mongoUrl: url,
     autoRemove: 'native',
-    ttl: 20  // live for 5 mins
+    ttl: 15 * 60  // live for 5 mins
   })
 }));
 
