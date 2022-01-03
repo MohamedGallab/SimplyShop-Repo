@@ -181,6 +181,8 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
+  // for logout
+  req.session.destroy();
   res.render('login', { errorMessage: '' });
 });
 
