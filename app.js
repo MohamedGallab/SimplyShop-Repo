@@ -25,16 +25,18 @@ app.use(session({
   store: new MongoStore({
     mongoUrl: url,
     autoRemove: 'native',
-    ttl: 15 * 60  // live for 5 mins
+    ttl: 15 * 60  // live for 15 mins
   })
 }));
 
 
 
 //assign port
+// if heruko
 if(process.env.PORT){
   app.listen(process.env.PORT, function() {console.log('server started');});
 }
+//else local
 else{
   app.listen(3000, function() {console.log('server started on port 3000');});
 }
