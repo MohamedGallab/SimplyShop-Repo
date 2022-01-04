@@ -3,7 +3,7 @@ let path = require('path');
 let session = require('express-session');
 let MongoStore = require('connect-mongo');
 let app = express();
-let {MongoClient} = require("mongodb");
+let { MongoClient } = require("mongodb");
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -19,7 +19,7 @@ let client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: t
 
 // create session for every user
 app.use(session({
-  secret:'some secret',
+  secret: 'some secret',
   resave: false,
   saveUninitialized: true,
   store: new MongoStore({
@@ -29,101 +29,72 @@ app.use(session({
   })
 }));
 
-
-
 //assign port
 // if heruko
-if(process.env.PORT){
-  app.listen(process.env.PORT, function() {console.log('server started');});
+if (process.env.PORT) {
+  app.listen(process.env.PORT, function () { console.log('server started'); });
 }
 //else local
-else{
-  app.listen(3000, function() {console.log('server started on port 3000');});
+else {
+  app.listen(3000, function () { console.log('server started on port 3000'); });
 }
 
 //functions
 async function login(username, password, req, res) {
 
   await client.connect();
-
-  //Check userneame and password not null
-  if (username && password) {
-
-    //Query Users Collection to find the first match
-    client.db('SimplyShopDB').collection('UsersColl').findOne({ Username: username, Password: password }, function (err, result) {
-      // found a result so redirect which also ends the response
-      if (result) {
-        res.redirect('/home');
-      }
-      // or user didn't enter correct password so send an HTML
-      else {
-        res.render('login', { errorMessage: 'Wrong Password or Username, Please Try Again' });
-      }
-      // close connection either way
-      client.close();
+  //Query Users Collection to find the first match
+  client.db('SimplyShopDB').collection('UsersColl').findOne({ Username: username, Password: password }, function (err, result) {
+    // found a result so redirect which also ends the response
+    if (result) {
+      res.redirect('/home');
     }
-    );
-  }
-  // if user didn't enter anything
-  else {
-    res.end();
+    // or user didn't enter correct password so send an HTML
+    else {
+      res.render('login', { errorMessage: 'Wrong Password or Username, Please Try Again' });
+    }
+    // close connection either way
     client.close();
   }
+  );
 }
 
 async function register(username, password, req, res) {
 
-  if (username && password) {
-    //start connection
-    await client.connect();
-
-    // create and add user
-    let user = { Username: username, Password: password, Cart: [] };
-
-    // search for user name
-    client.db('SimplyShopDB').collection('UsersColl').findOne({ Username: username }, async function (err, result) {
-
-      // find if user already exists
-      if (result) {
-        res.render('registration', { errorMessage: 'UserName Already Exists' });
-      }
-      // register new user & cart
-      else {
-        await client.db('SimplyShopDB').collection('UsersColl').insertOne(user);
-        res.redirect('/home');
-      }
-      // close connection either way
-      client.close();
-    }
-    );
-  }
-  else {
-    res.render('registration', { errorMessage: 'You have to enter a username and password' });
-  }
-}
-
-async function search(searchTerm, req, res) {
-
   //start connection
   await client.connect();
 
-  //Check search term is not null
-  if (searchTerm) {
-    let test = ".*" + searchTerm + ".*";
-    //Query Items Collection to find the all matches
-    client.db('SimplyShopDB').collection('ItemsColl').find({ 'Name': { '$regex': '.*' + searchTerm + '.*', '$options': 'i' } }).toArray(function (err, items) {
-      res.render('searchresults', {
-        items: items, // pass data from the server to the view
-      });
-      client.close();
-    });
-  }
+  // create and add user
+  let user = { Username: username, Password: password, Cart: [] };
 
-  // if user didn't enter anything
-  else {
+  // search for user name
+  client.db('SimplyShopDB').collection('UsersColl').findOne({ Username: username }, async function (err, result) {
+
+    // find if user already exists
+    if (result) {
+      res.render('registration', { errorMessage: 'UserName Already Exists' });
+    }
+    // register new user & cart
+    else {
+      await client.db('SimplyShopDB').collection('UsersColl').insertOne(user);
+      res.redirect('/home');
+    }
+    // close connection either way
     client.close();
-    res.end();
-  }
+  });
+}
+
+async function search(searchTerm, req, res) {
+  //start connection
+  await client.connect();
+  let test = ".*" + searchTerm + ".*";
+  //Query Items Collection to find the all matches
+  client.db('SimplyShopDB').collection('ItemsColl').find({ 'Name': { '$regex': '.*' + searchTerm + '.*', '$options': 'i' } }).toArray(function (err, items) {
+    res.render('searchresults', {
+      items: items, // pass data from the server to the view
+    });
+    client.close();
+  });
 }
 
 async function addToCart(username, itemName, route, req, res) {
@@ -155,8 +126,7 @@ async function addToCart(username, itemName, route, req, res) {
 
     // close connection either way
     client.close();
-  }
-  );
+  });
 }
 
 async function viewCart(username, req, res) {
@@ -208,11 +178,11 @@ app.post('/register', (req, res) => {
 
 
 // catch trying to go to a page directly
-app.use(function(req, res, next) {
-  if(!req.session.username) {       // requiring a valid access token
-      res.redirect('/login');
+app.use(function (req, res, next) {
+  if (!req.session.username) {       // requiring a valid access token
+    res.redirect('/login');
   } else {
-      next();
+    next();
   }
 });
 
